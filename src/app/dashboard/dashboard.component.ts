@@ -8,7 +8,8 @@ import { ApiService } from '../service/api.service';
 import Swal from 'sweetalert2';
 import { StateService } from '../service/state.service';
 import { CommonModule } from '@angular/common';
-declare var $: any; // Assumes you have jQuery available
+// Assumes you have jQuery available
+declare var $: any; 
 
 
 @Component({
@@ -51,7 +52,6 @@ export class DashboardComponent {
     //   event.returnValue = confirmationMessage; // Modern browsers require this
     //   return confirmationMessage; // For compatibility with older browsers
     // });
-
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
