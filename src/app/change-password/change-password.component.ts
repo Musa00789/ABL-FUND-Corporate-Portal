@@ -62,17 +62,17 @@ export class ChangePasswordComponent {
 
   
   changePassword: FormGroup = new FormGroup({
-    oldpwd: new FormControl('Abcd1234', [
+    oldpwd: new FormControl('', [
       Validators.required,
       // Validators.minLength(8),
       // Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$')
     ]),
-    newpwd: new FormControl('Abcd12345', [
+    newpwd: new FormControl('', [
       Validators.required,
       // Validators.minLength(8),
       // Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$')
     ]),
-    reenterpwd: new FormControl('Abcd12345', [
+    reenterpwd: new FormControl('', [
       Validators.required,
       // Validators.minLength(8),
       // Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$')
@@ -85,18 +85,18 @@ export class ChangePasswordComponent {
     if (this.changePassword.valid) {
       // console.log('Form data:', this.changePassword.value);
       this.loadingAlert('Processing your request...', 'Loading...'); // Pass a message to the loading alert
-      // if(this.changePassword.value.oldpwd === this.changePassword.value.newpwd){
-      //   this.showErrorAlert('Old Password and New Password cannot be same.');
-      //   return;
-      // }
-      // else if(this.changePassword.value.newpwd != this.changePassword.value.reenterpwd){
-      //   this.showErrorAlert('Password does not match.');
-      //   return;
-      // }
-      // else
-      // {
-      //   this.ChangePassword();
-      // }
+      if(this.changePassword.value.oldpwd === this.changePassword.value.newpwd){
+        this.showErrorAlert('Old Password and New Password cannot be same.');
+        return;
+      }
+      else if(this.changePassword.value.newpwd != this.changePassword.value.reenterpwd){
+        this.showErrorAlert('Password does not match.');
+        return;
+      }
+      else
+      {
+        this.ChangePassword();
+      }
       this.ChangePassword();
 
     } 

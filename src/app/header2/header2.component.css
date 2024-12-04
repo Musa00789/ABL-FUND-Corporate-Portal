@@ -6,7 +6,7 @@ header::before, header::after {
     content: "";
     position: absolute;
     height: 2px;
-    top: 57%; /* Adjust this based on your design needs */
+    top: 75%; /* Adjust this based on your design needs */
     left: 0;
     right: 0;
     z-index: 0; /* Behind the logos */
@@ -39,14 +39,8 @@ header .container {
 
 .logo-side{
     z-index: 1; 
-    width: 17.5%; 
-    /* margin-top: 12px; */
+    width: 11.5%; 
     margin-left: 3% !important;
-}
-.user-side{
-    z-index: 1; 
-    width: 11%;
-    margin-right: 50px;
 }
 .ABLFundslogo {
 	width: 100% !important;
@@ -60,7 +54,7 @@ header .container {
         content: "";
         position: absolute;
         height: 2px;
-        top: 60%; /* Adjust this based on your design needs */
+        top: 70%; /* Adjust this based on your design needs */
         left: 0;
         right: 0;
         z-index: 0; /* Behind the logos */
@@ -85,23 +79,21 @@ header .container {
         margin-bottom: 0; /* Remove extra spacing on button */
     }
 
-    .logo-side
+    .logo
     {
-        width: 115px !important;
-        margin-left: 0px !important;
-        margin-top: 15px !important;
+        width: 100px !important;
+        margin-left: -8px !important;
+    }
+    .user
+    {
+        margin-bottom: 5px !important;
     }
 
-    .user-side
-    {
-        margin-right: 0px !important;
+    .logo-side{
+        z-index: 1; 
+        width: 21%; 
+        margin-left: 3% !important;
     }
-
-    .user-side .ABLdigitallogo
-    {
-        width: 120% !important;
-    }
-    
     .ABLFundslogo {
         width: 100% !important;
     }

@@ -22,6 +22,8 @@ import { CommonModule } from '@angular/common';
 export class PortfolioAllocationDetailsComponent implements OnInit {
   totalBalanceAmount: string = '';
   portfolioAllocation: any[] = [];
+  sortKey = ''; // Default sorting key
+  sortOrder = 'asc'; // Default ascending order
 
   constructor(private apiService: ApiService, private stateService: StateService, private router: Router) {}
 
@@ -63,6 +65,39 @@ export class PortfolioAllocationDetailsComponent implements OnInit {
         console.error('Error posting data', error);
         this.showErrorAlert(error.message);
       });
+  }
+
+
+
+
+
+  sortData(key: string, type: 'number' | 'string' | 'date') {
+    if (this.sortKey === key) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'; // Toggle order
+    } else {
+      this.sortKey = key;
+      this.sortOrder = 'asc'; // Default to ascending
+    }
+
+    this.portfolioAllocation.sort((a, b) => {
+      let valueA = a[key];
+      let valueB = b[key];
+
+      if (type === 'number') {
+        valueA = parseFloat(valueA);
+        valueB = parseFloat(valueB);
+      } else if (type === 'date') {
+        valueA = new Date(valueA).getTime();
+        valueB = new Date(valueB).getTime();
+      } else if (type === 'string') {
+        valueA = valueA.toString().toLowerCase();
+        valueB = valueB.toString().toLowerCase();
+      }
+
+      if (valueA < valueB) return this.sortOrder === 'asc' ? -1 : 1;
+      if (valueA > valueB) return this.sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
   }
 
 

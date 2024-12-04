@@ -8,6 +8,7 @@ import { ApiService } from '../service/api.service';
 import Swal from 'sweetalert2';
 import { StateService } from '../service/state.service';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../environments/environment.development';
 // Assumes you have jQuery available
 declare var $: any; 
 
@@ -26,11 +27,15 @@ declare var $: any;
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
-  totalBalanceAmount:number = 0;
+  totalBalanceAmount:string = '';
+  cisInvestmentValue:string = '';
   asOnDate:string = '';
   folionumber:string = '';
-  transexecuted:string = 'INPROCESS';
+  transexecuted:string = 'EXECUTED';
   transactionDetail: any[] = [];
+  isButtonDisabled:boolean = false;
+  sortKey = ''; // Default sorting key
+  sortOrder = 'asc'; // Default ascending order
 
 
   @ViewChild(ChartComponent) chartComponent!: ChartComponent;
@@ -64,27 +69,45 @@ export class DashboardComponent {
     this.loadingAlert('Processing your request...', 'Loading...'); // Pass a message to the loading alert
     this.folionumber = this.stateService.getAccountNumber();
     this.PortfolioSummary();
+    this.cnicPortfolioDetail();
     this.portfolioAllocationDetail(); 
     this.getTransactionDetail(this.transexecuted);
   }
-  
+
 
 
   chartData: any = {
-    type: 'pie',
+    type: 'doughnut',
     data: {
       labels: [],
       datasets: [
         {
           labels: [],
           data: [],
-          backgroundColor: ['#869628', '#800628', 'red', 'blue', 'lime', 'purple', 'orange', '#1C4E80', '#79c314', '#F06A25', 'magenta', '#D3D3D3'],
+          backgroundColor: [],
           borderWidth: 0,  // Set borderWidth to 0 to remove the white line
           hoverOffset: 10,
         },
       ],
     },
   };
+
+  chartData2: any = {
+    type: 'doughnut',
+    data: {
+      labels: [],
+      datasets: [
+        {
+        labels: [],
+        data: [],
+        backgroundColor: environment.ABLFUND_COLOR_CODE,
+        borderWidth: 0,  // Set borderWidth to 0 to remove the white line
+        hoverOffset: 10,
+        },
+      ],
+    },
+  };
+
 
   
 
@@ -122,7 +145,51 @@ export class DashboardComponent {
   
 
 
+  cnicPortfolioDetail() {
+    // const globalAuthToken = sessionStorage.getItem('globalAuthToken');
+    const globalAuthToken = this.stateService.getGlobalAuthToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Mbs645 ${globalAuthToken}`
+    });
+    
+    const folionumber = this.stateService.getAccountNumber();
+    const portfolioSummaryPayload = { folionumber };    
 
+    this.apiService.GetCnicPortfolioDetail(portfolioSummaryPayload, headers).subscribe(
+      (response: any) => {
+        console.log('GetCnicPortfolioDetail Response:', response);
+        if (response) { 
+          this.cisInvestmentValue = response.cisPortfolioSummary.cisInvestmentValue;                   
+          response.cisPortfolioSummary.cisPortfolioSummary.forEach((allocation: any) => {
+            this.chartData.data.labels.push(allocation.fundCategoryCode);
+            this.chartData.data.datasets[0].data.push(allocation.amount);
+            this.chartData.data.datasets[0].backgroundColor.push(allocation.fundCategoryColorCode);
+          });
+          
+          this.chartComponent.updateChart();
+          
+          setTimeout(() => {
+          Swal.close();
+          }, 9000);
+        }
+        else if (response == null) {
+          this.transactionDetail = [];
+          setTimeout(() => {
+            Swal.close();
+          }, 1000);
+        }
+        else{
+          this.loadingAlert('No Response', 'The server did not return any response.');
+        }
+      },
+      (error: any) => {
+        console.error('Error posting data', error);
+        this.showErrorAlert(error.message);
+      });
+  }
+
+
+  
   portfolioAllocationDetail() {
     // const globalAuthToken = sessionStorage.getItem('globalAuthToken');
     const globalAuthToken = this.stateService.getGlobalAuthToken();
@@ -139,16 +206,16 @@ export class DashboardComponent {
         console.log('GetPortfolioAllocationDetail Response:', response);
         if (response) {          
           response.portfolioAllocation.forEach((allocation: any) => {
-            this.chartData.data.labels.push(allocation.fundShortName + ' - '+ allocation.navDate);
-            this.chartData.data.datasets[0].data.push(allocation.availableAmount);
-            this.chartData.data.datasets[0].labels.push(allocation.fundName);
+            this.chartData2.data.labels.push(allocation.fundShortName + ' - '+ allocation.navDate);
+            this.chartData2.data.datasets[0].data.push(allocation.availableAmount);
+            this.chartData2.data.datasets[0].labels.push(allocation.fundName);
           });
           
           this.chartComponent.updateChart();
+          
           setTimeout(() => {
-            // Trigger Update Chart
-            Swal.close();
-          }, 1000);
+          Swal.close();
+          }, 9000);
         }
         else if (response == null) {
           this.transactionDetail = [];
@@ -168,8 +235,8 @@ export class DashboardComponent {
     
 
 
-
   getTransactionDetail(transexecuted: string) {
+    this.isButtonDisabled = !this.isButtonDisabled;  // Toggle the boolean value
     this.loadingAlert('Processing your request...', 'Loading...'); // Pass a message to the loading alert
     // const globalAuthToken = sessionStorage.getItem('globalAuthToken');
     const globalAuthToken = this.stateService.getGlobalAuthToken();
@@ -188,6 +255,13 @@ export class DashboardComponent {
         console.log('GetTransactionDetail Response:', response);
         if (response) {
           this.transactionDetail = [];
+          
+            // this.transactionDetail = [
+            // { transDate: '2024-01-01', fundName: 'Fund A', transType: 'Type 1', units: 100, amount: 500 },
+            // { transDate: '2024-02-01', fundName: 'Fund B', transType: 'Type 2', units: 200, amount: 1000 },
+            // { transDate: '2024-03-01', fundName: 'Fund C', transType: 'Type 3', units: 150, amount: 750 },
+            // ];
+
           response.transList.forEach((allocation: any) => {
             if (!allocation.transDate) allocation.transDate = 'null';
             if (!allocation.fundName) allocation.fundName = 'null';
@@ -219,6 +293,35 @@ export class DashboardComponent {
 
 
 
+  sortData(key: string) {
+    if (this.sortKey === key) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'; // Toggle order
+    } else {
+      this.sortKey = key;
+      this.sortOrder = 'asc'; // Default to ascending
+    }
+
+    this.transactionDetail.sort((a, b) => {
+      const valueA = a[key];
+      const valueB = b[key];
+
+      if (valueA < valueB) return this.sortOrder === 'asc' ? -1 : 1;
+      if (valueA > valueB) return this.sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+
+
+  toggleButtonState(buttonType: string) {
+    if (buttonType === 'EXECUTED') {
+      this.isButtonDisabled = true;  // Disable the "Executed" button
+    } else if (buttonType === 'INPROCESS') {
+      this.isButtonDisabled = false;  // Disable the "In-Process" button
+    }
+  }
+
+
   loadingAlert(swalText: string, swalTitle: string) {
     const style = document.createElement('style'); style.innerHTML = `div.swal2-icon { border: none !important;}`;
     document.head.appendChild(style);
@@ -231,8 +334,7 @@ export class DashboardComponent {
       allowEscapeKey: false,
     });
   }
-  
-  
+
   
   showErrorAlert(errorTittle:string) {
     Swal.fire({

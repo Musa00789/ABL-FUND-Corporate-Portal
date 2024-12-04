@@ -38,6 +38,15 @@ export class ApiService {
   }
 
 
+  GetCnicPortfolioDetail(data: any, headers: HttpHeaders): Observable<any> {
+    const completeUrl = `${this.baseUrl}/api/account/cnicPortfolioDetail`;
+    let params = new HttpParams()
+      .set('folioNumber', data.folionumber);
+    return this.http.post<any>(completeUrl, null, { headers, params });
+  }
+
+
+
   GetPortfolioAllocationDetail(data: any, headers: HttpHeaders): Observable<any> {
     const completeUrl = `${this.baseUrl}/api/account/GetPortfolioAllocationDetail`;
     let params = new HttpParams()
@@ -56,10 +65,18 @@ export class ApiService {
     return this.http.post<any>(completeUrl, null, { headers, params });
   }
 
+  
+
+  GetFundsNames(data: any, headers: HttpHeaders): Observable<any> {
+    const completeUrl = `${this.baseUrl}/api/account/getfundsname`;
+    let params = new HttpParams()
+        .set('folio', data.folionumber);
+    return this.http.get<any>(completeUrl, { headers, params });
+  }
+
 
 
   GenerateReport(data: any, headers: HttpHeaders): Observable<any> {
-  
     const completeUrl = `${this.baseUrl}/api/account/generateReport`;
     let params = new HttpParams()
       .set('planId', data.planId)

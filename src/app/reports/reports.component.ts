@@ -52,8 +52,8 @@ export class ReportsComponent {
 
   reportForm: FormGroup = new FormGroup({
     reportName: new FormControl('', Validators.required),
-    fromDate: new FormControl('2020-01-01', Validators.required),
-    toDate: new FormControl('2024-06-27', Validators.required),
+    fromDate: new FormControl('', Validators.required),
+    toDate: new FormControl('', Validators.required),
     fundCode: new FormControl('', Validators.required)
   });
 
@@ -135,16 +135,15 @@ export class ReportsComponent {
       'Authorization': `Mbs645 ${globalAuthToken}`
     });
     
-    const userid = this.stateService.getUserId();
     const folionumber = this.stateService.getAccountNumber();
-    const portfolioSummaryPayload = { userid, folionumber };    
-
-    this.apiService.GetPortfolioAllocationDetail(portfolioSummaryPayload, headers).subscribe(
+    const GetFundsNamesPayload = { folionumber };    
+    
+    this.apiService.GetFundsNames(GetFundsNamesPayload, headers).subscribe(
       (response: any) => {
-        console.log('GetPortfolioAllocationDetail Response:', response);
-        if (response && response.portfolioAllocation) {        
+        console.log('GetFundsNames Response:', response);
+        if (response) {        
           this.fundsNames = [];
-          response.portfolioAllocation.forEach((allocation: any) => {
+          response.forEach((allocation: any) => {
             this.fundsNames.push(allocation);
           });
         }

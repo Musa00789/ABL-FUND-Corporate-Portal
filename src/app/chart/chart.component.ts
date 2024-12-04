@@ -5,6 +5,8 @@ import {
   OnDestroy,
   ElementRef,
   ViewChild,
+  EventEmitter,
+  Output,
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 
@@ -18,42 +20,45 @@ Chart.register(...registerables);
   styleUrl: './chart.component.css',
 })
 export class ChartComponent implements OnInit, OnDestroy {
-  @Input() chartData: any; // Input for dynamic data
-  @ViewChild('chartCanvas', { static: true })
-  chartCanvas!: ElementRef<HTMLCanvasElement>;
+  @Input() chartData: any; // Input for chart data
+  @Output() notify: EventEmitter<void> = new EventEmitter();
+  @ViewChild('chartCanvas', { static: true }) chartCanvas!: ElementRef<HTMLCanvasElement>;
+  // @ViewChild('chartCanvas2', { static: true }) chartCanvas2!: ElementRef<HTMLCanvasElement>;
+
 
   private chart: Chart | undefined;
 
+  
+  ngOnInit(): void {
+    console.log('initializing chart', this.chartData);
+    if (this.chartData) this.initChart();
+    // if (this.chartData) this.initChart2();
+  }
+
+  ngOnDestroy(): void {
+    if (this.chart) this.chart.destroy();
+  }
 
 
   
-  ngOnInit(): void {
-    this.initChart();
+  // Initialize the first chart
+  private initChart() {
+    const canvas = this.chartCanvas.nativeElement;
+    this.chart = new Chart(canvas, {
+      type: this.chartData.type,
+      data: this.chartData.data,
+      options: this.chartOptions,
+    });
   }
+  // private initChart2() {
+  //   const canvas = this.chartCanvas.nativeElement;
+  //   this.chart = new Chart(canvas, {
+  //     type: this.chartData.type,
+  //     data: this.chartData.data,
+  //     options: this.chartOptions2,
+  //   });
+  // }
 
-
-
-  ngOnDestroy(): void {
-    if (this.chart) {
-      this.chart.destroy(); // Cleanup chart instance
-    }
-  }
-
-
-
-  // Initialize the chart
-  initChart() {
-    if (this.chartData) {
-      const canvas = this.chartCanvas.nativeElement;
-      this.chart = new Chart(canvas, {
-        type: this.chartData.type,
-        data: this.chartData.data,
-        options: this.chartOptions,
-      });
-    } else {
-      console.error('No chart data provided');
-    }
-  }
 
 
 
@@ -64,6 +69,7 @@ export class ChartComponent implements OnInit, OnDestroy {
       this.chart.update();
     }
   }
+  
 
 
 
@@ -168,6 +174,109 @@ export class ChartComponent implements OnInit, OnDestroy {
       }
     },
   };
+
+
+
+
+  // chartOptions2: any = {
+  //   animation: {
+  //     animateRotate: true,
+  //     animateScale: true,
+  //   },
+  //   datalabels: {
+  //     // Add this section for data labels
+  //     anchor: 'end',
+  //     align: 'end',
+  //     color: '#fff', // Change color as needed
+  //     formatter: (value: number) => {
+  //       return value.toFixed(2) + '%'; // Customize how the labels appear
+  //     },
+  //   },
+  //   responsive: false, // Set to false if you want fixed dimensions
+  //   plugins: {
+  //     legend: {
+  //       display: false,
+  //       position: 'bottom',
+  //       labels: {
+  //         boxWidth: 15,
+  //         boxHeight: 15,
+  //         useBorderRadius: true,
+  //         borderRadius: 15,
+  //         font: {
+  //           size: 15 // Set the font size for the chart labels
+  //         }
+  //       },
+  //     },
+  //     tooltip: {
+  //       enabled: true, // Disable default tooltip
+  //       mode: 'index',
+  //       position: 'nearest',
+  //       titleColor: '#fff',
+  //       padding: 15,
+  //       borderColor: 'white',
+  //       borderWidth: 1.5,
+  //       usePointStyle: false,
+  //       bodyAlign: 'left',
+  //       cornerRadius: 6,
+  //       boxPadding: 5,
+  //       callbacks: {
+  //         label: (tooltipItem: any) => {
+  //           const dataIndex = tooltipItem.dataIndex;
+  //           const dataValue = tooltipItem.dataset.data[dataIndex];
+  //           const dataValueTotal = tooltipItem.dataset.data.reduce(
+  //             (total: number, value: number) => total + Number(value), 0
+  //           );
+  //           const percentage = Math.round((dataValue / dataValueTotal) * 100);
+  //           return [
+  //             `${dataValue} (${percentage}%)`,
+  //           ];
+  //         },
+  //       },
+  //       backgroundColor: (context: any) => {
+  //         if (context.tooltip && context.tooltip.dataPoints.length) {
+  //           const dataIndex = context.tooltip.dataPoints[0].dataIndex;
+  //           return context.tooltip.dataPoints[0].dataset.backgroundColor[
+  //             dataIndex
+  //           ];
+  //         }
+  //         return '#FFF';
+  //       },
+  //       bodyColor: (context: any) => {
+  //         if (context.tooltip && context.tooltip.dataPoints.length) {
+  //           const dataIndex = context.tooltip.dataPoints[0].dataIndex;
+  //           const bgColor =
+  //             context.tooltip.dataPoints[0].dataset.backgroundColor[dataIndex];
+  //           return bgColor === '#FFB84D' ? '#000' : '#FFF';
+  //         }
+  //         return '#FFF';
+  //       },
+  //       bodyFont: {
+  //         weight: 'bold',
+  //         size: 10,
+  //         color: 'red',
+  //       },
+  //     },
+  //   },
+
+  //   interaction: {
+  //     mode: 'nearest', // Ensures that the closest item is targeted on click
+  //     intersect: true, // Only trigger when directly on the element
+  //   },
+  //   onClick: (event: MouseEvent, elements: any[]) => {
+  //     if (elements.length) {
+  //       const index = elements[0].index;
+  //       const datasetIndex = elements[0].datasetIndex;
+  //       const dataset = this.chart?.data.datasets[datasetIndex] as any;
+
+  //       if (dataset) {
+  //         dataset.borderWidth = dataset.borderWidth === 5 ? 0 : 5; // Toggle borderWidth
+  //         this.chart?.update();
+  //       } else {
+  //         console.error('Spacing property not found in dataset');
+  //       }
+  //     }
+  //   },
+  // };
 
   
 }

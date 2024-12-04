@@ -1,3 +1,7 @@
+/* Ensure proper box-sizing for all elements */
+* {
+    box-sizing: border-box;
+}
 
 
 .main-content {
@@ -8,9 +12,12 @@
     /* border-radius: 0 40px; */
     border-radius: 20px;
 	width: 100%;
+    height: 100%;
 	padding: 20px;
 	background-color: #ffffff;
-	box-shadow: 1.5px 2.598px 15px 0px rgba(0, 0, 0, 0.13);
+    border: 1px solid #000;
+	box-shadow: 6px 4px 4px #ccc;
+	/* box-shadow: 1.5px 2.598px 15px 0px rgba(0, 0, 0, 0.13); */
     /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; */
     /* animation: shadowChange 2s infinite; */
     /* box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset; */
@@ -28,7 +35,7 @@
 .card-title {
     font-size: 18px;
     line-height: 1.2;
-	color: #e86d30;
+	color: #22417f;
 	font-weight: bold;
 }
 
@@ -44,13 +51,13 @@ ul{
 }
 
 ul li {
-    font-size: 15px;
+    font-size: 22px;
 	font-weight: bold;
 	line-height: 1.2;
 
     border-bottom: 1px solid #ccc;
 	padding-top: 19px;
-	padding-bottom: 21px;
+	padding-bottom: 30px;
 	text-align: center;
 }
 
@@ -113,21 +120,18 @@ ul li {
     justify-content: center;
     background-color: #22417f; /* Dark blue for PKR */
     color: white;
-    padding: 0px 5px;
+    width: 100%;
+    height: 100%;
     border-radius: 5px;
     font-weight: 1000 !important;
 }
 
 .investment-value-label {
-    font-size: 15px;
     color: #f24a22; /* Orange color for label */
-    font-weight: bold;
 }
 
 .investment-value-amount {
-    font-size: 15px;
     color: #22417f !important; /* Dark blue color for amount */
-    font-weight: bold;
 }
 
 .btn-orange {
@@ -145,7 +149,7 @@ ul li {
 .inprocess_toggle {
     background-color: #f06a25; 
     color: white; 
-    border-radius: 12px 0 0 12px; 
+    border-radius: 0 12px 12px 0; 
     padding: 6px 12px; 
     font-weight: bold; 
     border: none;
@@ -153,7 +157,7 @@ ul li {
 .executed_toggle {
     background-color: #22417f; 
     color: white; 
-    border-radius: 0 12px 12px 0; 
+    border-radius: 12px 0 0 12px; 
     padding: 6px 12px; 
     font-weight: bold; 
     border: none;
@@ -165,6 +169,32 @@ ul li {
     color: #003366; /* Dark blue color */
     margin-bottom: 15px;
 }
+
+.table thead th {
+    font-size: 10px !important;
+    font-weight: bold;
+    color: white;
+    cursor: default;
+}
+
+
+/* table tbody tr:hover {
+    font-weight: bold;
+    color: black;
+    font-size: 13px;
+    cursor: pointer;
+    transform: scale(1.03);
+    transition: transform 0.6s ease;
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+    -webkit-transform: scale(1.03);
+    -moz-transform: scale(1.03);
+    -ms-transform: scale(1.03);
+    -o-transform: scale(1.03);
+    -webkit-transition: transform 0.6s ease;
+    -moz-transition: transform 0.6s ease;
+    -ms-transition: transform 0.6s ease;
+    -o-transition: transform 0.6s ease;
+} */
 
 
 @media (max-width: 768px) {
